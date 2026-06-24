@@ -1,41 +1,259 @@
-.App {
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html{
+  scroll-behavior:smooth;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+body{
+  min-height:100vh;
+  overflow-x:hidden;
+  transition:all .3s ease;
+}
+
+.app{
+  position:relative;
+  min-height:100vh;
+}
+
+.app.dark{
+  background:
+  radial-gradient(circle at top left,#3B82F620 0%,transparent 30%),
+  radial-gradient(circle at top right,#8B5CF620 0%,transparent 30%),
+  radial-gradient(circle at bottom left,#06B6D420 0%,transparent 35%),
+  #0F172A;
+}
+
+.app.light{
+  background:
+  radial-gradient(circle at top left,#3B82F610 0%,transparent 30%),
+  radial-gradient(circle at top right,#8B5CF610 0%,transparent 30%),
+  radial-gradient(circle at bottom left,#06B6D410 0%,transparent 35%),
+  #F8FAFC;
+}
+
+.navbar{
+  transition:all .3s ease;
+}
+
+.hero-title{
+  font-size:4rem;
+  font-weight:900;
+  line-height:1.1;
+}
+
+.gradient-text{
+  background:linear-gradient(
+  135deg,
+  #3B82F6,
+  #8B5CF6,
+  #06B6D4
+  );
+  background-size:200% auto;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:gradientMove 5s linear infinite;
+}
+
+@keyframes gradientMove{
+  0%{
+    background-position:0% center;
+  }
+  100%{
+    background-position:200% center;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+textarea{
+  transition:all .3s ease !important;
 }
 
-.App-link {
-  color: #61dafb;
+textarea:focus{
+  outline:none !important;
+  box-shadow:
+  0 0 0 4px rgba(59,130,246,.25) !important;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.btn{
+  border:none !important;
+  border-radius:14px !important;
+  padding:12px 22px !important;
+  font-weight:700 !important;
+  transition:all .25s ease !important;
+}
+
+.btn:hover{
+  transform:translateY(-4px);
+}
+
+.btn-primary{
+  background:linear-gradient(
+  135deg,
+  #3B82F6,
+  #8B5CF6
+  ) !important;
+}
+
+.btn-success{
+  background:linear-gradient(
+  135deg,
+  #10B981,
+  #06B6D4
+  ) !important;
+}
+
+.btn-danger{
+  background:linear-gradient(
+  135deg,
+  #EF4444,
+  #F97316
+  ) !important;
+}
+
+.card{
+  border:none !important;
+  border-radius:22px !important;
+  overflow:hidden;
+  backdrop-filter:blur(18px);
+  transition:all .35s ease;
+}
+
+.card:hover{
+  transform:translateY(-10px);
+  box-shadow:
+  0 20px 50px rgba(0,0,0,.15);
+}
+
+.card-body{
+  padding:28px;
+}
+
+.card h2{
+  font-size:2rem;
+  font-weight:800;
+  margin-top:10px;
+  color:#3B82F6;
+}
+
+.card h6{
+  color:#64748B;
+  font-weight:600;
+}
+
+.glass{
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.1);
+}
+
+.floating-glow{
+  position:absolute;
+  width:450px;
+  height:450px;
+  border-radius:50%;
+  filter:blur(120px);
+  opacity:.25;
+  animation:float 8s ease-in-out infinite;
+  z-index:0;
+}
+
+@keyframes float{
+  0%{
+    transform:translateY(0px);
   }
-  to {
-    transform: rotate(360deg);
+  50%{
+    transform:translateY(-30px);
+  }
+  100%{
+    transform:translateY(0px);
   }
 }
-.blank{
-  color: red;
+
+.shadow-premium{
+  box-shadow:
+  0 20px 60px rgba(0,0,0,.15);
+}
+
+h1{
+  font-weight:900;
+}
+
+h2{
+  font-weight:800;
+}
+
+h3{
+  font-weight:700;
+}
+
+p{
+  line-height:1.8;
+}
+
+::-webkit-scrollbar{
+  width:8px;
+}
+
+::-webkit-scrollbar-track{
+  background:#0F172A;
+}
+
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(
+  180deg,
+  #3B82F6,
+  #8B5CF6
+  );
+  border-radius:999px;
+}
+
+footer a{
+  transition:.3s ease;
+}
+
+footer a:hover{
+  color:#3B82F6 !important;
+}
+
+.container{
+  position:relative;
+  z-index:2;
+}
+
+@media(max-width:992px){
+
+.hero-title{
+  font-size:3rem;
+}
+
+}
+
+@media(max-width:768px){
+
+.hero-title{
+  font-size:2.2rem;
+}
+
+.btn{
+  width:100%;
+}
+
+.card{
+  text-align:center;
+}
+
+}
+
+@media(max-width:500px){
+
+.hero-title{
+  font-size:1.8rem;
+}
+
 }
