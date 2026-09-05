@@ -1,315 +1,109 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import {
-  FaGithub,
-  FaLinkedin,
-  FaEnvelope,
-  FaBolt,
-  FaRobot,
-  FaFileAlt,
-  FaHeart,
-  FaArrowRight
-} from 'react-icons/fa';
+import { FiGithub, FiLinkedin, FiHeart, FiShield, FiZap } from 'react-icons/fi';
+import BrandLogo from './BrandLogo';
 
-export default function Footer({ mode }) {
-  const textColor =
-    mode === 'dark' ? '#F8FAFC' : '#0F172A';
-
-  const subColor =
-    mode === 'dark' ? '#94A3B8' : '#64748B';
-
+export default function Footer() {
   return (
     <footer
+      className="mt-auto py-5 border-top"
       style={{
-        marginTop: '100px',
-        background:
-          mode === 'dark'
-            ? '#0B1120'
-            : '#ffffff',
-        borderTop:
-          mode === 'dark'
-            ? '1px solid rgba(255,255,255,0.08)'
-            : '1px solid rgba(15,23,42,0.08)',
-        position: 'relative',
-        overflow: 'hidden'
+        background: 'var(--bg-card)',
+        borderColor: 'var(--border-subtle)'
       }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          width: '350px',
-          height: '350px',
-          borderRadius: '50%',
-          background:
-            'radial-gradient(circle,#3B82F620 0%,transparent 70%)',
-          top: '-120px',
-          right: '-120px'
-        }}
-      />
-
-      <div className="container py-5">
-
-        <div className="row g-5">
-
-          <div className="col-lg-4">
-
-            <h2 className="gradient-text fw-bold">
-              TextPro AI
-            </h2>
-
-            <p
-              className="mt-3"
-              style={{
-                color: subColor,
-                lineHeight: '1.8'
-              }}
-            >
-              Premium AI-inspired text workspace
-              built for developers, students,
-              creators and professionals.
+      <div className="container-fluid px-lg-4 px-3">
+        <div className="row g-4 justify-content-between">
+          {/* Brand Col */}
+          <div className="col-lg-4 col-12">
+            <Link to="/" className="text-decoration-none d-inline-block mb-3">
+              <BrandLogo size={32} />
+            </Link>
+            <p className="text-secondary mb-3" style={{ fontSize: '0.88rem', maxWidth: '340px' }}>
+              The precision text workspace and developer productivity studio. Zero server latency, 100% private, and crafted for speed.
             </p>
-
-            <div className="d-flex gap-3 mt-4">
-
-              <motion.a
-                whileHover={{
-                  y: -5,
-                  scale: 1.1
-                }}
+            <div className="d-flex align-items-center gap-3">
+              <a
                 href="https://github.com/amandubey923/textUtils"
                 target="_blank"
                 rel="noreferrer"
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 14,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background:
-                    'linear-gradient(135deg,#3B82F6,#8B5CF6)',
-                  color: '#fff'
-                }}
+                className="btn-textora btn-textora-secondary p-2"
+                title="GitHub Repository"
               >
-                <FaGithub />
-              </motion.a>
-
-              <motion.a
-                whileHover={{
-                  y: -5,
-                  scale: 1.1
-                }}
+                <FiGithub size={16} />
+              </a>
+              <a
                 href="https://www.linkedin.com/in/aman-kr-dubey"
                 target="_blank"
                 rel="noreferrer"
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 14,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background:
-                    'linear-gradient(135deg,#3B82F6,#8B5CF6)',
-                  color: '#fff'
-                }}
+                className="btn-textora btn-textora-secondary p-2"
+                title="LinkedIn Profile"
               >
-                <FaLinkedin />
-              </motion.a>
-
+                <FiLinkedin size={16} />
+              </a>
             </div>
-
           </div>
 
-          <div className="col-lg-2">
-
-            <h5
-              style={{
-                color: textColor,
-                marginBottom: 20
-              }}
-            >
-              Quick Links
-            </h5>
-
-            <div className="d-flex flex-column gap-3">
-
-              <Link
-                to="/"
-                style={{
-                  color: subColor
-                }}
-              >
-                Home
+          {/* Navigation Links */}
+          <div className="col-lg-2 col-sm-4 col-6">
+            <h6 className="fw-bold mb-3 text-primary" style={{ fontSize: '0.85rem' }}>
+              Product
+            </h6>
+            <div className="d-flex flex-column gap-2" style={{ fontSize: '0.85rem' }}>
+              <Link to="/" className="text-secondary text-decoration-none hover-primary">
+                Text Workspace
               </Link>
-
-              <Link
-                to="/about"
-                style={{
-                  color: subColor
-                }}
-              >
-                About
+              <Link to="/tools" className="text-secondary text-decoration-none hover-primary">
+                All Tools
               </Link>
-
+              <Link to="/about" className="text-secondary text-decoration-none hover-primary">
+                About & Architecture
+              </Link>
             </div>
-
           </div>
 
-          <div className="col-lg-3">
-
-            <h5
-              style={{
-                color: textColor,
-                marginBottom: 20
-              }}
-            >
-              Features
-            </h5>
-
-            <div
-              className="d-flex flex-column gap-3"
-              style={{
-                color: subColor
-              }}
-            >
-
-              <span>
-                <FaBolt className="me-2" />
-                Text Utilities
-              </span>
-
-              <span>
-                <FaRobot className="me-2" />
-                AI Workspace
-              </span>
-
-              <span>
-                <FaFileAlt className="me-2" />
-                Export Tools
-              </span>
-
+          {/* Capabilities */}
+          <div className="col-lg-3 col-sm-4 col-6">
+            <h6 className="fw-bold mb-3 text-primary" style={{ fontSize: '0.85rem' }}>
+              Toolkits
+            </h6>
+            <div className="d-flex flex-column gap-2 text-secondary" style={{ fontSize: '0.85rem' }}>
+              <span>Case Transformations</span>
+              <span>Whitespace Cleaners</span>
+              <span>Developer Encodings</span>
+              <span>Multi-format Document Exports</span>
             </div>
-
           </div>
 
-          <div className="col-lg-3">
-
-            <h5
-              style={{
-                color: textColor,
-                marginBottom: 20
-              }}
-            >
-              Resources
-            </h5>
-
-            <div
-              className="d-flex flex-column gap-3"
-              style={{
-                color: subColor
-              }}
-            >
-
-              <span>
-                Documentation
-              </span>
-
-              <span>
-                Roadmap
-              </span>
-
-              <span>
-                Changelog
-              </span>
-
-            </div>
-
-            <div
-              className="mt-4 p-3"
-              style={{
-                borderRadius: 18,
-                background:
-                  mode === 'dark'
-                    ? 'rgba(255,255,255,0.05)'
-                    : 'rgba(15,23,42,0.04)'
-              }}
-            >
-              <div
-                className="d-flex align-items-center gap-2"
-                style={{
-                  color: textColor,
-                  fontWeight: 600
-                }}
-              >
-                <FaEnvelope />
-                Contact
+          {/* Privacy & Trust */}
+          <div className="col-lg-3 col-sm-4 col-12">
+            <h6 className="fw-bold mb-3 text-primary" style={{ fontSize: '0.85rem' }}>
+              Privacy & Performance
+            </h6>
+            <div className="d-flex flex-column gap-2 text-secondary" style={{ fontSize: '0.85rem' }}>
+              <div className="d-flex align-items-center gap-2">
+                <FiShield className="text-success" size={14} />
+                <span>100% Client-side execution</span>
               </div>
-
-              <div
-                className="mt-2"
-                style={{
-                  color: subColor,
-                  fontSize: '.95rem'
-                }}
-              >
-                kumaraman19137@gmail.com
+              <div className="d-flex align-items-center gap-2">
+                <FiZap className="text-warning" size={14} />
+                <span>Zero server latency</span>
               </div>
             </div>
-
           </div>
-
         </div>
 
-        <hr
-          style={{
-            marginTop: 50,
-            marginBottom: 30,
-            opacity: 0.15
-          }}
-        />
-
-        <div className="row align-items-center">
-
-          <div className="col-md-6">
-            <p
-              className="mb-0"
-              style={{
-                color: subColor
-              }}
-            >
-              © 2026 TextPro AI. All Rights Reserved.
-            </p>
+        {/* Bottom Bar */}
+        <div className="d-flex flex-column flex-sm-row align-items-center justify-content-between pt-4 mt-4 border-top border-secondary-subtle gap-2 text-muted" style={{ fontSize: '0.8rem' }}>
+          <div>
+            © {new Date().getFullYear()} Textora Studio. Released under MIT License.
           </div>
-
-          <div className="col-md-6 text-md-end mt-3 mt-md-0">
-
-            <span
-              style={{
-                color: subColor
-              }}
-            >
-              Built with
-              <FaHeart
-                style={{
-                  color: '#EF4444',
-                  marginLeft: 8,
-                  marginRight: 8
-                }}
-              />
-              React
-              <FaArrowRight
-                style={{
-                  marginLeft: 10
-                }}
-              />
-            </span>
-
+          <div className="d-flex align-items-center gap-1">
+            <span>Engineered with</span>
+            <FiHeart className="text-danger mx-1" size={13} />
+            <span>by Aman Dubey</span>
           </div>
-
         </div>
-
       </div>
     </footer>
   );

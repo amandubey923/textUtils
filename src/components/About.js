@@ -1,433 +1,172 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import {
-  FaRocket,
-  FaBolt,
-  FaBrain,
-  FaChartLine,
-  FaCode,
-  FaUsers,
-  FaCheckCircle,
-  FaArrowRight
-} from 'react-icons/fa';
+  FiZap,
+  FiShield,
+  FiCode,
+  FiCommand,
+  FiGithub,
+  FiLinkedin,
+  FiArrowRight
+} from 'react-icons/fi';
+import BrandLogo from './BrandLogo';
 
-export default function About({ mode }) {
-  const textColor =
-    mode === 'dark' ? '#F8FAFC' : '#0F172A';
-
-  const subColor =
-    mode === 'dark' ? '#94A3B8' : '#64748B';
-
-  const cardBg =
-    mode === 'dark'
-      ? 'rgba(255,255,255,0.05)'
-      : 'rgba(255,255,255,0.9)';
-
-  const features = [
+export default function About() {
+  const corePillars = [
     {
-      icon: <FaBolt />,
-      title: 'Lightning Fast',
-      desc: 'Process and transform text instantly.'
+      icon: <FiZap size={22} className="text-primary" />,
+      title: 'Zero Latency Performance',
+      desc: 'All text transformations, formatting calculations, and telemetry occur locally in milliseconds without blocking the UI thread.'
     },
     {
-      icon: <FaBrain />,
-      title: 'AI Ready',
-      desc: 'Built for future AI integrations.'
+      icon: <FiShield size={22} className="text-success" />,
+      title: '100% Client-Side Privacy',
+      desc: 'Your documents, sensitive tokens, JSON payloads, and private notes never leave your browser. Zero tracking, zero telemetry logging.'
     },
     {
-      icon: <FaChartLine />,
-      title: 'Advanced Analytics',
-      desc: 'Powerful insights from your text.'
+      icon: <FiCode size={22} className="text-info" />,
+      title: 'Developer First Utilities',
+      desc: 'Built with essential engineering tools including JSON formatting, Base64 encoding, URL conversion, slugification, and casing converters.'
     },
     {
-      icon: <FaCode />,
-      title: 'Developer Friendly',
-      desc: 'Modern React architecture.'
+      icon: <FiCommand size={22} className="text-warning" />,
+      title: 'Keyboard-Driven Velocity',
+      desc: 'Navigate and execute any transformation with command palette shortcuts, undo/redo stacks, and quick find-and-replace controls.'
     }
   ];
 
-  const benefits = [
-    'Improve productivity',
-    'Save editing time',
-    'Professional writing workflow',
-    'Beautiful user experience',
-    'Cross-device compatibility',
-    'Future AI capabilities'
-  ];
-
-  const timeline = [
-    {
-      year: '2025',
-      title: 'TextUtils Started'
-    },
-    {
-      year: '2026',
-      title: 'TextPro AI Launch'
-    },
-    {
-      year: 'Future',
-      title: 'AI Writing Suite'
-    }
+  const shortcuts = [
+    { key: 'Ctrl / ⌘ + K', action: 'Open Global Command Palette' },
+    { key: 'Ctrl / ⌘ + F', action: 'Toggle Find & Replace Bar' },
+    { key: 'Ctrl / ⌘ + Z', action: 'Undo Last Action' },
+    { key: 'Ctrl / ⌘ + Y', action: 'Redo Last Action' },
+    { key: 'Ctrl / ⌘ + Shift + Z', action: 'Redo (Alternative shortcut)' },
+    { key: 'Ctrl / ⌘ + S', action: 'Save Current Draft to Snippets' },
+    { key: 'Escape', action: 'Close Active Bar / Palette' }
   ];
 
   return (
     <div className="container py-5">
-
-      <section className="text-center mb-5">
-
-        <span
-          style={{
-            color: '#3B82F6',
-            fontWeight: 700,
-            letterSpacing: '1px'
-          }}
-        >
-          ABOUT TEXTPRO AI
-        </span>
-
-        <h1
-          className="mt-3"
-          style={{
-            fontSize: 'clamp(2.5rem,6vw,4.5rem)',
-            fontWeight: 900,
-            color: textColor
-          }}
-        >
-          Modern Text Workspace
-          <br />
-
-          <span className="gradient-text">
-            Built For Productivity
-          </span>
-        </h1>
-
-        <p
-          className="mx-auto mt-4"
-          style={{
-            maxWidth: '800px',
-            color: subColor,
-            fontSize: '1.1rem'
-          }}
-        >
-          TextPro AI transforms ordinary text tools
-          into a premium productivity platform with
-          modern design, analytics and future-ready
-          AI experiences.
+      {/* Hero Intro */}
+      <div className="text-center mb-5 pb-3">
+        <BrandLogo size={48} showWordmark={false} className="mb-3" />
+        <h1 className="display-5 fw-bold mb-3">About Textora Studio</h1>
+        <p className="text-secondary mx-auto lead" style={{ maxWidth: '720px' }}>
+          Textora is a precision text workspace and developer productivity studio designed for engineers,
+          technical writers, and creators who demand speed, craftsmanship, and uncompromising privacy.
         </p>
+        <div className="d-flex justify-content-center gap-2 mt-4">
+          <Link to="/" className="btn-textora btn-textora-primary px-4 py-2">
+            <span>Launch Workspace</span>
+            <FiArrowRight size={15} />
+          </Link>
+          <a
+            href="https://github.com/amandubey923/textUtils"
+            target="_blank"
+            rel="noreferrer"
+            className="btn-textora btn-textora-secondary px-3 py-2"
+          >
+            <FiGithub size={15} />
+            <span>GitHub Repository</span>
+          </a>
+        </div>
+      </div>
 
-      </section>
+      {/* Core Architectural Pillars */}
+      <div className="row g-4 mb-5">
+        {corePillars.map((p) => (
+          <div className="col-md-6 col-12" key={p.title}>
+            <div className="textora-card h-100 p-4">
+              <div
+                className="d-inline-flex p-3 rounded-3 mb-3"
+                style={{ background: 'var(--bg-surface)' }}
+              >
+                {p.icon}
+              </div>
+              <h5 className="fw-bold mb-2">{p.title}</h5>
+              <p className="text-secondary m-0" style={{ fontSize: '0.9rem', lineHeight: 1.7 }}>
+                {p.desc}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
 
-      <section
-        className="p-4 p-lg-5 mb-5"
+      {/* Keyboard Shortcuts Cheatsheet */}
+      <div className="textora-card p-4 mb-5">
+        <div className="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+          <div>
+            <h5 className="fw-bold m-0 d-flex align-items-center gap-2">
+              <FiCommand className="text-primary" />
+              <span>Keyboard Shortcuts Cheatsheet</span>
+            </h5>
+            <span className="text-muted" style={{ fontSize: '0.8rem' }}>
+              Operate at the speed of thought without leaving your keyboard
+            </span>
+          </div>
+          <span className="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">
+            Active in Workspace
+          </span>
+        </div>
+
+        <div className="table-responsive">
+          <table className="table table-borderless m-0 align-middle">
+            <tbody>
+              {shortcuts.map((s) => (
+                <tr
+                  key={s.key}
+                  style={{ borderBottom: '1px solid var(--border-subtle)' }}
+                >
+                  <td style={{ width: '260px', padding: '12px 8px' }}>
+                    <span className="kbd-shortcut" style={{ fontSize: '0.82rem', padding: '4px 8px' }}>
+                      {s.key}
+                    </span>
+                  </td>
+                  <td className="text-secondary" style={{ fontSize: '0.9rem' }}>
+                    {s.action}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Creator & Privacy Banner */}
+      <div
+        className="p-4 p-md-5 rounded-4 text-center position-relative overflow-hidden mb-5"
         style={{
-          borderRadius: '32px',
-          background:
-            'linear-gradient(135deg,#3B82F6,#8B5CF6)',
-          color: '#fff'
+          background: 'var(--accent-gradient)',
+          color: '#FFFFFF'
         }}
       >
-        <div className="row align-items-center">
+        <h3 className="fw-bold mb-2">Designed & Engineered by Aman Dubey</h3>
+        <p className="opacity-90 mx-auto mb-4" style={{ maxWidth: '580px' }}>
+          Open-source software crafted with modern React, pure text algorithms, and high-performance design principles.
+        </p>
 
-          <div className="col-lg-8">
+        <div className="d-flex justify-content-center gap-3">
+          <a
+            href="https://github.com/amandubey923"
+            target="_blank"
+            rel="noreferrer"
+            className="btn btn-light fw-semibold d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-sm text-dark"
+          >
+            <FiGithub size={16} />
+            <span>GitHub Profile</span>
+          </a>
 
-            <h2 className="fw-bold">
-              Our Mission
-            </h2>
-
-            <p
-              className="mb-0 mt-3"
-              style={{
-                fontSize: '1.1rem',
-                opacity: 0.95
-              }}
-            >
-              To create the most elegant and useful
-              text workspace for developers, students,
-              creators and professionals.
-            </p>
-
-          </div>
-
-          <div className="col-lg-4 text-lg-end mt-4 mt-lg-0">
-
-            <FaRocket size={80} />
-
-          </div>
-
+          <a
+            href="https://www.linkedin.com/in/aman-kr-dubey"
+            target="_blank"
+            rel="noreferrer"
+            className="btn btn-outline-light fw-semibold d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3"
+          >
+            <FiLinkedin size={16} />
+            <span>LinkedIn</span>
+          </a>
         </div>
-
-      </section>
-
-      <section className="mb-5">
-
-        <h2
-          className="mb-4"
-          style={{
-            color: textColor
-          }}
-        >
-          Features
-        </h2>
-
-        <div className="row g-4">
-
-          {features.map((feature) => (
-            <div
-              className="col-md-6 col-lg-3"
-              key={feature.title}
-            >
-              <motion.div
-                whileHover={{
-                  y: -10
-                }}
-                style={{
-                  background: cardBg,
-                  borderRadius: '24px',
-                  padding: '28px',
-                  height: '100%',
-                  backdropFilter: 'blur(20px)',
-                  border:
-                    mode === 'dark'
-                      ? '1px solid rgba(255,255,255,0.08)'
-                      : '1px solid rgba(15,23,42,0.08)'
-                }}
-              >
-                <div
-                  style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: 16,
-                    background:
-                      'linear-gradient(135deg,#3B82F6,#8B5CF6)',
-                    color: '#fff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1.2rem',
-                    marginBottom: 18
-                  }}
-                >
-                  {feature.icon}
-                </div>
-
-                <h5
-                  style={{
-                    color: textColor
-                  }}
-                >
-                  {feature.title}
-                </h5>
-
-                <p
-                  style={{
-                    color: subColor
-                  }}
-                >
-                  {feature.desc}
-                </p>
-
-              </motion.div>
-            </div>
-          ))}
-
-        </div>
-
-      </section>
-
-      <section className="mb-5">
-
-        <div className="row g-4">
-
-          <div className="col-lg-6">
-
-            <div
-              style={{
-                background: cardBg,
-                borderRadius: '24px',
-                padding: '32px',
-                height: '100%'
-              }}
-            >
-              <h3
-                style={{
-                  color: textColor
-                }}
-              >
-                Benefits
-              </h3>
-
-              <div className="mt-4">
-
-                {benefits.map((item) => (
-                  <div
-                    key={item}
-                    className="d-flex align-items-center mb-3"
-                  >
-                    <FaCheckCircle
-                      color="#22C55E"
-                      className="me-3"
-                    />
-
-                    <span
-                      style={{
-                        color: subColor
-                      }}
-                    >
-                      {item}
-                    </span>
-
-                  </div>
-                ))}
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <div className="col-lg-6">
-
-            <div
-              style={{
-                background: cardBg,
-                borderRadius: '24px',
-                padding: '32px',
-                height: '100%'
-              }}
-            >
-              <h3
-                style={{
-                  color: textColor
-                }}
-              >
-                Platform Stats
-              </h3>
-
-              <div className="row g-4 mt-2">
-
-                <div className="col-6">
-                  <h2
-                    style={{
-                      color: '#3B82F6'
-                    }}
-                  >
-                    15+
-                  </h2>
-                  <p style={{ color: subColor }}>
-                    Text Tools
-                  </p>
-                </div>
-
-                <div className="col-6">
-                  <h2
-                    style={{
-                      color: '#8B5CF6'
-                    }}
-                  >
-                    100%
-                  </h2>
-                  <p style={{ color: subColor }}>
-                    Responsive
-                  </p>
-                </div>
-
-                <div className="col-6">
-                  <h2
-                    style={{
-                      color: '#3B82F6'
-                    }}
-                  >
-                    AI
-                  </h2>
-                  <p style={{ color: subColor }}>
-                    Ready
-                  </p>
-                </div>
-
-                <div className="col-6">
-                  <h2
-                    style={{
-                      color: '#8B5CF6'
-                    }}
-                  >
-                    React 18
-                  </h2>
-                  <p style={{ color: subColor }}>
-                    Powered
-                  </p>
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      <section>
-
-        <h2
-          className="mb-4"
-          style={{
-            color: textColor
-          }}
-        >
-          Journey
-        </h2>
-
-        <div className="row g-4">
-
-          {timeline.map((item) => (
-            <div
-              className="col-md-4"
-              key={item.year}
-            >
-              <motion.div
-                whileHover={{
-                  y: -8
-                }}
-                style={{
-                  background: cardBg,
-                  borderRadius: '24px',
-                  padding: '28px',
-                  textAlign: 'center'
-                }}
-              >
-                <div
-                  style={{
-                    color: '#3B82F6',
-                    fontWeight: 800,
-                    fontSize: '1.2rem'
-                  }}
-                >
-                  {item.year}
-                </div>
-
-                <h5
-                  className="mt-3"
-                  style={{
-                    color: textColor
-                  }}
-                >
-                  {item.title}
-                </h5>
-
-                <FaArrowRight
-                  className="mt-3"
-                  color="#8B5CF6"
-                />
-
-              </motion.div>
-            </div>
-          ))}
-
-        </div>
-
-      </section>
-
+      </div>
     </div>
   );
 }

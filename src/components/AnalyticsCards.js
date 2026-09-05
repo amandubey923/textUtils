@@ -1,128 +1,85 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import {
-  FaFont,
-  FaKeyboard,
-  FaAlignLeft,
-  FaClock,
-  FaParagraph,
-  FaChartLine
-} from 'react-icons/fa';
+  FiType,
+  FiFileText,
+  FiAlignLeft,
+  FiClock,
+  FiActivity,
+  FiList
+} from 'react-icons/fi';
 
-export default function AnalyticsCards({
-  mode,
-  words,
-  characters,
-  sentences,
-  readingTime,
-  paragraphs,
-  avgWordLength
-}) {
-  const stats = [
+export default function AnalyticsCards({ stats }) {
+  const cards = [
     {
       title: 'Words',
-      value: words,
-      icon: <FaFont />
+      value: stats.words.toLocaleString(),
+      sub: `${stats.charactersNoSpaces.toLocaleString()} chars (no space)`,
+      icon: <FiType />
     },
     {
       title: 'Characters',
-      value: characters,
-      icon: <FaKeyboard />
+      value: stats.characters.toLocaleString(),
+      sub: `Across ${stats.lines.toLocaleString()} lines`,
+      icon: <FiFileText />
     },
     {
       title: 'Sentences',
-      value: sentences,
-      icon: <FaAlignLeft />
+      value: stats.sentences.toLocaleString(),
+      sub: `${stats.paragraphs.toLocaleString()} paragraphs`,
+      icon: <FiAlignLeft />
     },
     {
       title: 'Reading Time',
-      value: `${readingTime} min`,
-      icon: <FaClock />
-    },
-    {
-      title: 'Paragraphs',
-      value: paragraphs,
-      icon: <FaParagraph />
+      value: `${stats.readingTime} min`,
+      sub: `~${stats.speakingTime} min speaking`,
+      icon: <FiClock />
     },
     {
       title: 'Avg Word Length',
-      value: avgWordLength,
-      icon: <FaChartLine />
+      value: `${stats.avgWordLength} chars`,
+      sub: 'Per vocabulary token',
+      icon: <FiList />
+    },
+    {
+      title: 'Reading Ease',
+      value: `${stats.readingScore}/100`,
+      sub: stats.readingLevel,
+      icon: <FiActivity />
     }
   ];
 
   return (
-    <div className="row g-4">
-      {stats.map((item) => (
-        <div
-          className="col-lg-4 col-md-6"
-          key={item.title}
-        >
-          <motion.div
-            whileHover={{
-              y: -8,
-              scale: 1.02
-            }}
-            style={{
-              borderRadius: '24px',
-              padding: '24px',
-              height: '100%',
-              background:
-                mode === 'dark'
-                  ? 'rgba(255,255,255,0.05)'
-                  : 'rgba(255,255,255,0.9)',
-              backdropFilter: 'blur(20px)',
-              border:
-                mode === 'dark'
-                  ? '1px solid rgba(255,255,255,0.08)'
-                  : '1px solid rgba(15,23,42,0.08)',
-              boxShadow:
-                '0 20px 40px rgba(0,0,0,0.08)'
-            }}
-          >
-            <div
-              style={{
-                width: 54,
-                height: 54,
-                borderRadius: 14,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background:
-                  'linear-gradient(135deg,#3B82F6,#8B5CF6)',
-                color: '#fff',
-                marginBottom: 16
-              }}
-            >
-              {item.icon}
-            </div>
+    <div>
+      <div className="d-flex align-items-center justify-content-between mb-3">
+        <h5 className="fw-bold m-0 d-flex align-items-center gap-2">
+          <FiActivity className="text-primary" />
+          <span>Real-time Text Intelligence</span>
+        </h5>
+        <span className="text-muted font-monospace" style={{ fontSize: '0.8rem' }}>
+          Live telemetry
+        </span>
+      </div>
 
-            <div
-              style={{
-                color:
-                  mode === 'dark'
-                    ? '#94A3B8'
-                    : '#64748B'
-              }}
-            >
-              {item.title}
+      <div className="row g-3">
+        {cards.map((card) => (
+          <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-6" key={card.title}>
+            <div className="metric-card">
+              <div>
+                <div className="metric-icon-box">{card.icon}</div>
+                <div className="metric-label">{card.title}</div>
+                <div className="metric-value">{card.value}</div>
+              </div>
+              <div
+                className="text-muted mt-2 pt-2 border-top border-secondary-subtle"
+                style={{ fontSize: '0.72rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                title={card.sub}
+              >
+                {card.sub}
+              </div>
             </div>
-
-            <h2
-              style={{
-                marginTop: 10,
-                fontWeight: 800,
-                color:
-                  mode === 'dark'
-                    ? '#F8FAFC'
-                    : '#0F172A'
-              }}
-            >
-              {item.value}
-            </h2>
-          </motion.div>
-        </div>
-      ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
