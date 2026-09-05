@@ -4,10 +4,14 @@ import {
   FiFileText,
   FiUpload,
   FiCopy,
+  FiCheck,
+  FiTrash2,
   FiEye,
   FiCode,
-  FiSliders,
-  FiSave
+  FiSearch,
+  FiRotateCcw,
+  FiRotateCw,
+  FiBookmark
 } from 'react-icons/fi';
 
 import ToolBar from './ToolBar';
@@ -47,8 +51,8 @@ import {
   calculateStatistics
 } from '../utils/textOperations';
 
-export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalette }) {
-  // Main Text & History Stack
+export default function TextForm({ showAlert, onOpenSnippets }) {
+  // Main Text State & Undo/Redo Stack
   const [text, setText] = useState(() => getStoredDraft());
   const [history, setHistory] = useState(() => [getStoredDraft()]);
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -67,7 +71,7 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
 
-  // Auto-save draft on change (debounced)
+  // Debounced draft auto-save
   useEffect(() => {
     const timer = setTimeout(() => {
       saveDraft(text);
@@ -75,18 +79,18 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
     return () => clearTimeout(timer);
   }, [text]);
 
-  // Push new state into undo/redo history
+  // Push into undo/redo history
   const pushHistory = useCallback((newText) => {
     setHistory((prev) => {
       const sliced = prev.slice(0, historyIndex + 1);
       if (sliced[sliced.length - 1] === newText) return prev;
-      const updated = [...sliced, newText].slice(-40); // keep up to 40 states
+      const updated = [...sliced, newText].slice(-40);
       setHistoryIndex(updated.length - 1);
       return updated;
     });
   }, [historyIndex]);
 
-  // Text updater helper
+  // Transformation Applier
   const applyTransformation = (newText, message) => {
     if (newText === text) {
       if (message) showAlert('Text is already in this format', 'info');
@@ -97,7 +101,7 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
     if (message) showAlert(message, 'success');
   };
 
-  // Undo / Redo
+  // Undo & Redo Handlers
   const handleUndo = useCallback(() => {
     if (historyIndex > 0) {
       const prevIndex = historyIndex - 1;
@@ -116,7 +120,7 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
     }
   }, [history, historyIndex, showAlert]);
 
-  // Keyboard Shortcuts Listener
+  // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (
@@ -124,9 +128,7 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
         document.activeElement.tagName === 'INPUT' &&
         document.activeElement.type === 'text'
       ) {
-        if (e.key === 'Escape') {
-          setIsFindReplaceOpen(false);
-        }
+        if (e.key === 'Escape') setIsFindReplaceOpen(false);
         return;
       }
 
@@ -150,9 +152,7 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
         e.preventDefault();
         onOpenSnippets();
       } else if (e.key === 'Escape') {
-        if (isFindReplaceOpen) {
-          setIsFindReplaceOpen(false);
-        }
+        if (isFindReplaceOpen) setIsFindReplaceOpen(false);
       }
     };
 
@@ -165,7 +165,7 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
     if (!text) return;
     navigator.clipboard.writeText(text);
     setCopied(true);
-    showAlert('Copied text to clipboard', 'success');
+    showAlert('Copied to clipboard', 'success');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -175,21 +175,19 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
     applyTransformation('', 'Workspace cleared');
   };
 
-  // File Upload Handling
+  // File Upload
   const handleFileUpload = (file) => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
       const content = e.target.result;
-      applyTransformation(content, `Imported file "${file.name}"`);
+      applyTransformation(content, `Imported "${file.name}"`);
     };
-    reader.onerror = () => {
-      showAlert('Failed to read file', 'danger');
-    };
+    reader.onerror = () => showAlert('Failed to read file', 'danger');
     reader.readAsText(file);
   };
 
-  // Drag & Drop
+  // Drag & drop
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragOver(true);
@@ -211,11 +209,11 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
   // Speech Synthesis
   const handleSpeak = () => {
     if (!window.speechSynthesis) {
-      showAlert('Speech synthesis is not supported on this browser', 'danger');
+      showAlert('Speech synthesis not supported in this browser', 'danger');
       return;
     }
     if (!text.trim()) {
-      showAlert('Enter some text to listen', 'info');
+      showAlert('Type or paste text to listen', 'info');
       return;
     }
 
@@ -234,17 +232,15 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
-      showAlert('Speech playback stopped', 'info');
+      showAlert('Playback stopped', 'info');
     }
   };
 
-  // Voice Recognition (Speech to Text)
+  // Speech Recognition
   const handleStartVoice = () => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      showAlert('Speech recognition is not supported in this browser (use Chrome or Edge)', 'danger');
+      showAlert('Speech recognition requires Google Chrome or Edge', 'danger');
       return;
     }
 
@@ -256,7 +252,7 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
 
       recognition.onstart = () => {
         setIsListening(true);
-        showAlert('Listening... Speak into your microphone', 'info');
+        showAlert('Listening... Speak now', 'info');
       };
 
       recognition.onresult = (event) => {
@@ -270,19 +266,13 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
         });
       };
 
-      recognition.onerror = (event) => {
-        setIsListening(false);
-        showAlert(`Speech error: ${event.error || 'recognition failed'}`, 'danger');
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
+      recognition.onerror = () => setIsListening(false);
+      recognition.onend = () => setIsListening(false);
 
       recognitionRef.current = recognition;
       recognition.start();
     } catch (e) {
-      showAlert('Unable to initialize microphone speech', 'danger');
+      showAlert('Unable to start speech input', 'danger');
     }
   };
 
@@ -290,7 +280,7 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       setIsListening(false);
-      showAlert('Microphone listening stopped', 'info');
+      showAlert('Microphone stopped', 'info');
     }
   };
 
@@ -311,21 +301,16 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
   const exportTxt = () => downloadBlob(text, 'textora-document.txt', 'text/plain;charset=utf-8');
   const exportMarkdown = () => downloadBlob(text, 'textora-document.md', 'text/markdown;charset=utf-8');
   const exportHTML = () => {
-    const htmlContent = `<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Textora Document</title>
-  <style>
-    body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #1e293b; }
-    pre { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; white-space: pre-wrap; font-family: monospace; }
-  </style>
+  <style>body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #1e293b; } pre { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; white-space: pre-wrap; font-family: monospace; }</style>
 </head>
-<body>
-  <pre>${text.replace(/[&<>'"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]))}</pre>
-</body>
+<body><pre>${text.replace(/[&<>'"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]))}</pre></body>
 </html>`;
-    downloadBlob(htmlContent, 'textora-document.html', 'text/html;charset=utf-8');
+    downloadBlob(html, 'textora-document.html', 'text/html;charset=utf-8');
   };
 
   const exportJSON = () => {
@@ -333,24 +318,14 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
       const parsed = JSON.parse(text);
       downloadBlob(JSON.stringify(parsed, null, 2), 'textora-data.json', 'application/json');
     } catch (e) {
-      const payload = {
-        title: 'Textora Document',
-        timestamp: new Date().toISOString(),
-        content: text
-      };
+      const payload = { title: 'Textora Document', timestamp: new Date().toISOString(), content: text };
       downloadBlob(JSON.stringify(payload, null, 2), 'textora-data.json', 'application/json');
     }
   };
 
-  // Multi-page wrapped PDF Export
   const exportPDF = () => {
     try {
-      const pdf = new jsPDF({
-        orientation: 'p',
-        unit: 'pt',
-        format: 'a4'
-      });
-
+      const pdf = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4' });
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 40;
@@ -358,30 +333,26 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
       const lineHeight = 16;
       let cursorY = margin + 20;
 
-      // Header Banner
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(14);
-      pdf.setTextColor(79, 70, 229);
+      pdf.setTextColor(99, 102, 241);
       pdf.text('Textora Document Export', margin, margin);
 
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(9);
       pdf.setTextColor(148, 163, 184);
-      pdf.text(`Generated on ${new Date().toLocaleString()}`, margin, margin + 14);
+      pdf.text(`Exported: ${new Date().toLocaleString()}`, margin, margin + 14);
 
       pdf.setDrawColor(226, 232, 240);
       pdf.setLineWidth(1);
       pdf.line(margin, margin + 22, pageWidth - margin, margin + 22);
 
       cursorY = margin + 45;
-
-      // Split text to fit page width
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(10.5);
       pdf.setTextColor(30, 41, 59);
 
       const lines = pdf.splitTextToSize(text || 'Empty Document', maxWidth);
-
       for (let i = 0; i < lines.length; i++) {
         if (cursorY + lineHeight > pageHeight - margin) {
           pdf.addPage();
@@ -392,26 +363,26 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
       }
 
       pdf.save('textora-document.pdf');
-      showAlert('PDF Document Downloaded', 'success');
+      showAlert('PDF Document downloaded', 'success');
     } catch (err) {
-      showAlert('Failed to generate PDF', 'danger');
+      showAlert('Failed to export PDF', 'danger');
     }
   };
 
-  // JSON format/minify wrapper with error catching
+  // JSON format/minify
   const handleJSONFormat = () => {
     try {
-      applyTransformation(formatJSON(text), 'JSON Prettified & Validated');
+      applyTransformation(formatJSON(text), 'JSON Prettified');
     } catch (e) {
-      showAlert(`Invalid JSON syntax: ${e.message}`, 'danger');
+      showAlert(`Invalid JSON: ${e.message}`, 'danger');
     }
   };
 
   const handleJSONMinify = () => {
     try {
-      applyTransformation(minifyJSON(text), 'JSON Compressed');
+      applyTransformation(minifyJSON(text), 'JSON Minified');
     } catch (e) {
-      showAlert(`Invalid JSON syntax: ${e.message}`, 'danger');
+      showAlert(`Invalid JSON: ${e.message}`, 'danger');
     }
   };
 
@@ -431,12 +402,11 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
     }
   };
 
-  // Stats calculation
   const stats = calculateStatistics(text);
+  const hasText = Boolean(text && text.length > 0);
 
   return (
-    <section className="container-fluid px-lg-4 px-3 py-4 position-relative">
-      {/* Hidden File Picker */}
+    <section className="container-fluid px-lg-4 px-3 py-3 position-relative">
       <input
         type="file"
         ref={fileInputRef}
@@ -449,70 +419,122 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
         }}
       />
 
-      {/* Main Workspace Frame */}
-      <div className="workspace-wrapper mb-4">
-        {/* Workspace Header Strip */}
-        <div className="workspace-header">
-          {/* Document indicator */}
+      {/* ── LEVEL 1: THE HERO WORKSPACE CANVAS ─────────────────────── */}
+      <div className="workspace-canvas mb-4">
+        {/* Workspace Action Bar */}
+        <div className="workspace-header-bar">
           <div className="d-flex align-items-center gap-2">
-            <FiFileText className="text-primary" size={17} />
-            <span className="fw-bold" style={{ fontSize: '0.95rem' }}>
-              Text Document
+            <FiFileText className="text-primary" size={16} />
+            <span className="fw-semibold" style={{ fontSize: '0.88rem' }}>
+              Text Canvas
             </span>
-            <span
-              className="d-none d-sm-inline-flex align-items-center gap-1 text-muted"
-              style={{ fontSize: '0.75rem' }}
-            >
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
-              Auto-saved
+            <span className="text-muted d-none d-sm-inline" style={{ fontSize: '0.72rem' }}>
+              • Auto-saved
             </span>
           </div>
 
-          {/* Quick Toolbar Controls: Monospace, Preview, Import, Save Snippet */}
+          {/* Quick Toolbar */}
           <div className="d-flex align-items-center gap-2 flex-wrap">
+            {/* Undo / Redo */}
+            <div className="d-flex align-items-center gap-1">
+              <button
+                onClick={handleUndo}
+                disabled={historyIndex === 0}
+                className="btn-textora btn-textora-ghost p-1"
+                title="Undo (Ctrl+Z)"
+              >
+                <FiRotateCcw size={14} />
+              </button>
+              <button
+                onClick={handleRedo}
+                disabled={historyIndex >= history.length - 1}
+                className="btn-textora btn-textora-ghost p-1"
+                title="Redo (Ctrl+Y)"
+              >
+                <FiRotateCw size={14} />
+              </button>
+            </div>
+
+            {/* Find & Replace */}
+            <button
+              onClick={() => setIsFindReplaceOpen((prev) => !prev)}
+              className={`btn-textora ${isFindReplaceOpen ? 'btn-textora-primary' : 'btn-textora-secondary'} py-1 px-2`}
+              title="Find & Replace (Ctrl+F)"
+              style={{ fontSize: '0.78rem' }}
+            >
+              <FiSearch size={13} />
+              <span className="d-none d-sm-inline">Find</span>
+            </button>
+
+            {/* Monospace Toggle */}
             <button
               onClick={() => setIsMono((prev) => !prev)}
               className={`btn-textora ${isMono ? 'btn-textora-primary' : 'btn-textora-secondary'} py-1 px-2`}
               title="Toggle Monospace Code Font"
-              style={{ fontSize: '0.8rem' }}
+              style={{ fontSize: '0.78rem' }}
             >
               <FiCode size={13} />
               <span className="d-none d-sm-inline">{isMono ? 'Mono' : 'Sans'}</span>
             </button>
 
+            {/* Split Preview */}
             <button
               onClick={() => setShowPreview((prev) => !prev)}
               className={`btn-textora ${showPreview ? 'btn-textora-primary' : 'btn-textora-secondary'} py-1 px-2`}
-              title="Toggle Live Side-by-Side Preview"
-              style={{ fontSize: '0.8rem' }}
+              title="Toggle Split View"
+              style={{ fontSize: '0.78rem' }}
             >
               <FiEye size={13} />
-              <span className="d-none d-sm-inline">Preview</span>
+              <span className="d-none d-sm-inline">Split</span>
             </button>
 
+            {/* Import */}
             <button
               onClick={() => fileInputRef.current && fileInputRef.current.click()}
               className="btn-textora btn-textora-secondary py-1 px-2"
-              title="Upload text or code file (.txt, .md, .json)"
-              style={{ fontSize: '0.8rem' }}
+              title="Import file (.txt, .md, .json)"
+              style={{ fontSize: '0.78rem' }}
             >
               <FiUpload size={13} />
               <span className="d-none d-sm-inline">Import</span>
             </button>
 
+            {/* Save Snippet */}
             <button
               onClick={onOpenSnippets}
               className="btn-textora btn-textora-secondary py-1 px-2"
               title="Save to Snippets (Ctrl+S)"
+              style={{ fontSize: '0.78rem' }}
+            >
+              <FiBookmark size={13} />
+              <span className="d-none d-sm-inline">Save</span>
+            </button>
+
+            {/* Primary Action: Copy */}
+            <button
+              onClick={handleCopy}
+              disabled={!hasText}
+              className={`btn-textora ${copied ? 'btn-textora-success' : 'btn-textora-primary'} py-1 px-3`}
               style={{ fontSize: '0.8rem' }}
             >
-              <FiSave size={13} />
-              <span className="d-none d-sm-inline">Save</span>
+              {copied ? <FiCheck size={14} /> : <FiCopy size={14} />}
+              <span>{copied ? 'Copied!' : 'Copy'}</span>
+            </button>
+
+            {/* Destructive Action: Clear */}
+            <button
+              onClick={handleClear}
+              disabled={!hasText}
+              className="btn-textora btn-textora-danger py-1 px-2"
+              title="Clear all text"
+              style={{ fontSize: '0.78rem' }}
+            >
+              <FiTrash2 size={13} />
             </button>
           </div>
         </div>
 
-        {/* Inline Find & Replace Bar */}
+        {/* Collapsible Find & Replace Panel */}
         {isFindReplaceOpen && (
           <FindReplaceBar
             text={text}
@@ -523,11 +545,11 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
           />
         )}
 
-        {/* Text Area & Optional Preview Split */}
+        {/* The Text Editing Canvas */}
         <div className="row g-0">
           <div className={`${showPreview ? 'col-lg-6 border-end border-secondary-subtle' : 'col-12'}`}>
             <div
-              className={`editor-textarea-container ${isDragOver ? 'border border-primary' : ''}`}
+              className={`w-100 ${isDragOver ? 'border border-primary' : ''}`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
@@ -540,35 +562,33 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
                   pushHistory(e.target.value);
                 }}
                 className={`textora-textarea ${isMono ? 'mono-mode' : ''}`}
-                placeholder="Type or paste your text here, drag & drop a file, or hit ⌘K for command palette..."
-                rows={14}
+                placeholder="Type or paste your text here, drag & drop a file, or press ⌘K for command palette..."
+                rows={13}
                 spellCheck="true"
               />
             </div>
           </div>
 
+          {/* Optional Split Preview */}
           {showPreview && (
             <div className="col-lg-6">
               <div
                 className="p-3 h-100"
                 style={{
-                  background: 'var(--bg-surface)',
-                  maxHeight: '480px',
+                  background: 'var(--bg-surface-subtle)',
+                  maxHeight: '460px',
                   overflowY: 'auto'
                 }}
               >
-                <div className="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom border-secondary-subtle">
-                  <span className="fw-semibold text-muted" style={{ fontSize: '0.8rem' }}>
-                    Live Formatted Output Preview
-                  </span>
+                <div className="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom border-secondary-subtle text-muted" style={{ fontSize: '0.78rem' }}>
+                  <span>Formatted Output Preview</span>
                   <button
                     onClick={handleCopy}
                     disabled={!text}
-                    className="btn-textora btn-textora-secondary py-1 px-2"
-                    style={{ fontSize: '0.75rem' }}
+                    className="btn-textora btn-textora-ghost py-0 px-1"
+                    style={{ fontSize: '0.72rem' }}
                   >
-                    <FiCopy size={12} />
-                    <span>Copy Output</span>
+                    Copy Output
                   </button>
                 </div>
                 <div
@@ -582,7 +602,7 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
                 >
                   {text || (
                     <span className="text-muted fst-italic">
-                      Preview updates instantly as you transform or edit text.
+                      Preview updates in real-time as you write or apply tools.
                     </span>
                   )}
                 </div>
@@ -591,46 +611,11 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
           )}
         </div>
 
-        {/* Live Status Strip */}
-        <div className="workspace-status-strip">
-          <div className="d-flex align-items-center gap-2 flex-wrap">
-            <span className="status-pill">
-              <span className="status-pill-val">{stats.words}</span>
-              <span>words</span>
-            </span>
-
-            <span className="status-pill">
-              <span className="status-pill-val">{stats.characters}</span>
-              <span>chars</span>
-            </span>
-
-            <span className="status-pill d-none d-sm-inline-flex">
-              <span className="status-pill-val">{stats.lines}</span>
-              <span>lines</span>
-            </span>
-
-            <span className="status-pill d-none d-md-inline-flex">
-              <span>Reading:</span>
-              <span className="status-pill-val">{stats.readingTime}m</span>
-            </span>
-          </div>
-
-          <div className="d-flex align-items-center gap-3">
-            <span className="text-muted d-none d-sm-inline" style={{ fontSize: '0.75rem' }}>
-              Press <kbd className="kbd-shortcut">Ctrl</kbd> + <kbd className="kbd-shortcut">K</kbd> for commands
-            </span>
-            <button
-              onClick={onOpenCommandPalette}
-              className="btn-textora btn-textora-ghost p-1"
-              title="Command Palette"
-            >
-              <FiSliders size={14} />
-            </button>
-          </div>
-        </div>
+        {/* ── LEVEL 3: COMPACT TELEMETRY BAR INTEGRATED AT CANVAS BASE ─ */}
+        <AnalyticsCards stats={stats} />
       </div>
 
-      {/* Structured Tool Suites */}
+      {/* ── LEVEL 4: STRUCTURED TOOL RIBBON ───────────────────────── */}
       <div className="mb-4">
         <ToolBar
           onUppercase={() => applyTransformation(toUppercase(text), 'Transformed to UPPERCASE')}
@@ -642,17 +627,17 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
           onKebabCase={() => applyTransformation(toKebabCase(text), 'Converted to kebab-case')}
           onPascalCase={() => applyTransformation(toPascalCase(text), 'Converted to PascalCase')}
           onInvertCase={() => applyTransformation(toInvertCase(text), 'Inverted Character Casing')}
-          onRemoveExtraSpaces={() => applyTransformation(removeExtraSpaces(text), 'Removed Extra Whitespace')}
+          onRemoveExtraSpaces={() => applyTransformation(removeExtraSpaces(text), 'Cleaned Extra Spaces')}
           onTrimLines={() => applyTransformation(trimLines(text), 'Trimmed Line Edges')}
-          onRemoveEmptyLines={() => applyTransformation(removeEmptyLines(text), 'Stripped Empty Lines')}
-          onRemoveDuplicateLines={() => applyTransformation(removeDuplicateLines(text), 'Removed Duplicate Lines')}
+          onRemoveEmptyLines={() => applyTransformation(removeEmptyLines(text), 'Removed Empty Lines')}
+          onRemoveDuplicateLines={() => applyTransformation(removeDuplicateLines(text), 'Deduplicated Lines')}
           onSortAZ={() => applyTransformation(sortLinesAZ(text), 'Sorted Lines A → Z')}
           onSortZA={() => applyTransformation(sortLinesZA(text), 'Sorted Lines Z → A')}
           onReverseLines={() => applyTransformation(reverseLines(text), 'Reversed Line Order')}
-          onReverseAll={() => applyTransformation(reverseEntireText(text), 'Reversed Entire Character String')}
-          onAddLineNumbers={() => applyTransformation(addLineNumbers(text), 'Numbered All Lines')}
+          onReverseAll={() => applyTransformation(reverseEntireText(text), 'Reversed Entire Text')}
+          onAddLineNumbers={() => applyTransformation(addLineNumbers(text), 'Added Line Numbers')}
           onStripLineNumbers={() => applyTransformation(stripLineNumbers(text), 'Stripped Line Numbers')}
-          onSlugify={() => applyTransformation(slugify(text), 'Converted to URL Slug')}
+          onSlugify={() => applyTransformation(slugify(text), 'Generated URL Slug')}
           onFormatJSON={handleJSONFormat}
           onMinifyJSON={handleJSONMinify}
           onUrlEncode={() => applyTransformation(urlEncode(text), 'URL Encoded')}
@@ -672,28 +657,15 @@ export default function TextForm({ showAlert, onOpenSnippets, onOpenCommandPalet
           onExportHTML={exportHTML}
           onExportPDF={exportPDF}
           onExportJSON={exportJSON}
-          onCopy={handleCopy}
-          copied={copied}
-          onClear={handleClear}
-          canUndo={historyIndex > 0}
-          canRedo={historyIndex < history.length - 1}
-          onUndo={handleUndo}
-          onRedo={handleRedo}
-          onToggleFindReplace={() => setIsFindReplaceOpen((prev) => !prev)}
-          isFindReplaceOpen={isFindReplaceOpen}
-          hasText={Boolean(text && text.length > 0)}
+          hasText={hasText}
         />
       </div>
 
-      {/* Live Analytics Dashboard */}
-      <div className="mb-4">
-        <AnalyticsCards stats={stats} />
-      </div>
-
-      {/* Text Insights: Frequency & Keywords */}
+      {/* ── LEVEL 5: COLLAPSIBLE TEXT INSIGHTS DRAWER ──────────────── */}
       <div className="mb-4">
         <TextInsights text={text} />
       </div>
     </section>
   );
 }
+

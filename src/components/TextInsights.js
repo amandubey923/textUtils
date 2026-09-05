@@ -1,164 +1,170 @@
-import React from 'react';
-import { FiBarChart2, FiPieChart, FiTag, FiHash } from 'react-icons/fi';
+import React, { useState } from 'react';
+import {
+  FiChevronDown,
+  FiChevronUp,
+  FiBarChart2,
+  FiHash,
+  FiEdit3,
+  FiLayers
+} from 'react-icons/fi';
 import { extractFrequencyInsights } from '../utils/textOperations';
 
 export default function TextInsights({ text }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const hasContent = Boolean(text && text.trim().length > 0);
   const { topWords, topChars, keywords } = extractFrequencyInsights(text);
   const maxWordCount = topWords.length > 0 ? topWords[0][1] : 1;
   const maxCharCount = topChars.length > 0 ? topChars[0][1] : 1;
 
-  if (!text || !text.trim()) {
-    return (
+  return (
+    <div className="insights-drawer">
+      {/* Header Bar / Toggle */}
       <div
-        className="p-4 rounded-3 text-center text-muted"
-        style={{
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border-subtle)'
+        className="insights-drawer-header"
+        onClick={() => setIsOpen((prev) => !prev)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsOpen((prev) => !prev);
+          }
         }}
       >
-        <FiBarChart2 size={32} className="mb-2 opacity-40" />
-        <p className="m-0 fw-semibold">Frequency & Keyword Insights</p>
-        <span style={{ fontSize: '0.8rem' }}>
-          Type or paste content in the workspace to reveal statistical distribution and key topic tags.
-        </span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="row g-3">
-      {/* Top Word Frequency with visual progress bars */}
-      <div className="col-lg-6 col-12">
-        <div className="textora-card h-100">
-          <div className="d-flex align-items-center justify-content-between mb-3">
-            <div className="d-flex align-items-center gap-2">
-              <FiBarChart2 className="text-primary" size={17} />
-              <h6 className="m-0 fw-bold">Top Word Frequency</h6>
-            </div>
-            <span className="text-muted" style={{ fontSize: '0.75rem' }}>
-              Top occurrences
+        <div className="d-flex align-items-center gap-2">
+          <FiLayers size={16} className="text-primary" />
+          <span className="fw-semibold" style={{ fontSize: '0.88rem' }}>
+            Vocabulary & Frequency Insights
+          </span>
+          {hasContent && (
+            <span className="badge rounded-pill bg-secondary-subtle text-secondary ms-1" style={{ fontSize: '0.7rem' }}>
+              {keywords.length} keywords detected
             </span>
-          </div>
+          )}
+        </div>
 
-          <div className="d-flex flex-column gap-3">
-            {topWords.map(([word, count]) => {
-              const pct = Math.round((count / maxWordCount) * 100);
-              return (
-                <div key={word}>
-                  <div className="d-flex justify-content-between align-items-center mb-1">
-                    <span className="fw-semibold font-monospace" style={{ fontSize: '0.85rem' }}>
-                      {word}
-                    </span>
-                    <span className="text-muted font-monospace" style={{ fontSize: '0.78rem' }}>
-                      {count}x
-                    </span>
-                  </div>
-                  <div
-                    className="w-100 rounded-pill overflow-hidden"
-                    style={{ height: '6px', background: 'var(--bg-surface-hover)' }}
-                  >
-                    <div
-                      className="h-100 rounded-pill"
-                      style={{
-                        width: `${pct}%`,
-                        background: 'var(--accent-gradient)',
-                        transition: 'width 0.3s ease'
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        <div className="d-flex align-items-center gap-2 text-secondary" style={{ fontSize: '0.8rem' }}>
+          <span>{isOpen ? 'Hide' : 'Expand'}</span>
+          {isOpen ? <FiChevronUp size={16} /> : <FiChevronDown size={16} />}
         </div>
       </div>
 
-      {/* Character Distribution */}
-      <div className="col-lg-6 col-12">
-        <div className="textora-card h-100">
-          <div className="d-flex align-items-center justify-content-between mb-3">
-            <div className="d-flex align-items-center gap-2">
-              <FiPieChart className="text-info" size={17} />
-              <h6 className="m-0 fw-bold">Character Distribution</h6>
-            </div>
-            <span className="text-muted" style={{ fontSize: '0.75rem' }}>
-              Density breakdown
-            </span>
-          </div>
-
-          <div className="d-flex flex-column gap-3">
-            {topChars.map(([char, count]) => {
-              const pct = Math.round((count / maxCharCount) * 100);
-              return (
-                <div key={char}>
-                  <div className="d-flex justify-content-between align-items-center mb-1">
-                    <span className="fw-bold font-monospace px-2 py-0 rounded" style={{ fontSize: '0.85rem', background: 'var(--bg-surface-hover)' }}>
-                      '{char}'
-                    </span>
-                    <span className="text-muted font-monospace" style={{ fontSize: '0.78rem' }}>
-                      {count} occurrences
-                    </span>
-                  </div>
-                  <div
-                    className="w-100 rounded-pill overflow-hidden"
-                    style={{ height: '6px', background: 'var(--bg-surface-hover)' }}
-                  >
-                    <div
-                      className="h-100 rounded-pill"
-                      style={{
-                        width: `${pct}%`,
-                        background: 'linear-gradient(90deg, #06B6D4, #3B82F6)',
-                        transition: 'width 0.3s ease'
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Extracted Topic Keywords (Cleaned) */}
-      <div className="col-12">
-        <div className="textora-card">
-          <div className="d-flex align-items-center gap-2 mb-3">
-            <FiTag className="text-primary" size={17} />
-            <h6 className="m-0 fw-bold">Significant Keywords & Subject Tags</h6>
-            <span className="text-muted ms-auto" style={{ fontSize: '0.75rem' }}>
-              Filtered against 150+ common stop-words
-            </span>
-          </div>
-
-          {keywords.length === 0 ? (
-            <div className="text-muted" style={{ fontSize: '0.85rem' }}>
-              No significant subject keywords detected yet.
+      {/* Collapsible Body */}
+      {isOpen && (
+        <div className="p-3 border-top border-secondary-subtle">
+          {!hasContent ? (
+            /* Beautiful empty state */
+            <div className="py-4 text-center text-muted">
+              <div
+                className="d-inline-flex p-3 rounded-circle mb-2"
+                style={{ background: 'var(--bg-surface-subtle)' }}
+              >
+                <FiEdit3 size={24} className="text-secondary opacity-60" />
+              </div>
+              <p className="fw-semibold mb-1" style={{ fontSize: '0.9rem' }}>
+                Start typing or paste text to unlock vocabulary distribution
+              </p>
+              <span className="text-muted" style={{ fontSize: '0.78rem' }}>
+                Word occurrences, character density, and extracted subject tags will populate here automatically.
+              </span>
             </div>
           ) : (
-            <div className="d-flex flex-wrap gap-2">
-              {keywords.map(({ word, count }) => (
-                <span
-                  key={word}
-                  className="d-inline-flex align-items-center gap-1 px-3 py-1 rounded-pill"
-                  style={{
-                    background: 'var(--bg-badge)',
-                    border: '1px solid rgba(99, 102, 241, 0.2)',
-                    color: 'var(--accent-primary)',
-                    fontSize: '0.82rem',
-                    fontWeight: 600
-                  }}
-                >
-                  <FiHash size={12} />
-                  <span>{word}</span>
-                  <span className="opacity-60 ms-1 font-monospace" style={{ fontSize: '0.75rem' }}>
-                    ({count})
-                  </span>
-                </span>
-              ))}
+            <div className="row g-3">
+              {/* Word frequency */}
+              <div className="col-md-6 col-12">
+                <div className="p-3 rounded-3" style={{ background: 'var(--bg-surface-subtle)' }}>
+                  <div className="d-flex align-items-center justify-content-between mb-3">
+                    <span className="fw-semibold" style={{ fontSize: '0.82rem' }}>
+                      Word Frequency
+                    </span>
+                    <FiBarChart2 className="text-primary" size={14} />
+                  </div>
+                  <div className="d-flex flex-column gap-2">
+                    {topWords.map(([word, count]) => {
+                      const pct = Math.round((count / maxWordCount) * 100);
+                      return (
+                        <div key={word}>
+                          <div className="d-flex justify-content-between mb-1" style={{ fontSize: '0.78rem' }}>
+                            <span className="font-monospace fw-semibold">{word}</span>
+                            <span className="text-muted">{count}x</span>
+                          </div>
+                          <div className="w-100 rounded-pill overflow-hidden" style={{ height: 4, background: 'var(--bg-surface)' }}>
+                            <div className="h-100 rounded-pill" style={{ width: `${pct}%`, background: 'var(--accent-primary)' }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Character frequency */}
+              <div className="col-md-6 col-12">
+                <div className="p-3 rounded-3" style={{ background: 'var(--bg-surface-subtle)' }}>
+                  <div className="d-flex align-items-center justify-content-between mb-3">
+                    <span className="fw-semibold" style={{ fontSize: '0.82rem' }}>
+                      Character Frequency
+                    </span>
+                    <FiBarChart2 className="text-info" size={14} />
+                  </div>
+                  <div className="d-flex flex-column gap-2">
+                    {topChars.map(([char, count]) => {
+                      const pct = Math.round((count / maxCharCount) * 100);
+                      return (
+                        <div key={char}>
+                          <div className="d-flex justify-content-between mb-1" style={{ fontSize: '0.78rem' }}>
+                            <span className="font-monospace fw-semibold">'{char}'</span>
+                            <span className="text-muted">{count}x</span>
+                          </div>
+                          <div className="w-100 rounded-pill overflow-hidden" style={{ height: 4, background: 'var(--bg-surface)' }}>
+                            <div className="h-100 rounded-pill" style={{ width: `${pct}%`, background: '#06B6D4' }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Keywords */}
+              <div className="col-12">
+                <div className="p-3 rounded-3" style={{ background: 'var(--bg-surface-subtle)' }}>
+                  <div className="d-flex align-items-center gap-2 mb-2">
+                    <FiHash className="text-primary" size={14} />
+                    <span className="fw-semibold" style={{ fontSize: '0.82rem' }}>
+                      Subject Keywords (Stop-words excluded)
+                    </span>
+                  </div>
+                  {keywords.length === 0 ? (
+                    <span className="text-muted" style={{ fontSize: '0.78rem' }}>
+                      No distinctive subject keywords extracted yet.
+                    </span>
+                  ) : (
+                    <div className="d-flex flex-wrap gap-1 mt-2">
+                      {keywords.map(({ word, count }) => (
+                        <span
+                          key={word}
+                          className="px-2 py-1 rounded"
+                          style={{
+                            background: 'var(--bg-surface)',
+                            border: '1px solid var(--border-subtle)',
+                            fontSize: '0.75rem',
+                            color: 'var(--accent-primary)',
+                            fontWeight: 500
+                          }}
+                        >
+                          #{word} <span className="text-muted font-monospace">({count})</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 }
+

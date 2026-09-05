@@ -84,27 +84,25 @@ export default function FindReplaceBar({
   };
 
   return (
-    <div className="find-replace-bar animate__animated animate__fadeIn">
+    <div className="find-replace-panel">
       <div className="d-flex align-items-center gap-2 flex-grow-1 flex-wrap">
-        {/* Find Input */}
         <div className="d-flex align-items-center gap-2">
-          <FiSearch className="text-secondary" size={15} />
+          <FiSearch className="text-muted" size={14} />
           <input
             type="text"
-            className="find-input"
-            placeholder="Find in text..."
+            className="find-input-field"
+            placeholder="Find text..."
             value={findStr}
             onChange={(e) => setFindStr(e.target.value)}
             autoFocus
           />
         </div>
 
-        {/* Replace Input */}
         <div className="d-flex align-items-center gap-2">
-          <FiRepeat className="text-secondary" size={15} />
+          <FiRepeat className="text-muted" size={14} />
           <input
             type="text"
-            className="find-input"
+            className="find-input-field"
             placeholder="Replace with..."
             value={replaceStr}
             onChange={(e) => setReplaceStr(e.target.value)}
@@ -114,17 +112,14 @@ export default function FindReplaceBar({
           />
         </div>
 
-        {/* Match Count Pill */}
         {findStr && (
-          <span className="status-pill">
-            <span className="status-pill-val">{matchCount}</span>
-            <span>{matchCount === 1 ? 'match' : 'matches'}</span>
+          <span className="text-muted font-monospace" style={{ fontSize: '0.75rem' }}>
+            {matchCount} {matchCount === 1 ? 'match' : 'matches'}
           </span>
         )}
 
-        {/* Options */}
-        <div className="d-flex align-items-center gap-3 ms-2">
-          <label className="d-flex align-items-center gap-1 text-secondary" style={{ fontSize: '0.78rem', cursor: 'pointer' }}>
+        <div className="d-flex align-items-center gap-3 ms-1">
+          <label className="d-flex align-items-center gap-1 text-secondary" style={{ fontSize: '0.75rem', cursor: 'pointer' }}>
             <input
               type="checkbox"
               checked={caseSensitive}
@@ -135,7 +130,7 @@ export default function FindReplaceBar({
             <span>Match Case (Aa)</span>
           </label>
 
-          <label className="d-flex align-items-center gap-1 text-secondary" style={{ fontSize: '0.78rem', cursor: 'pointer' }}>
+          <label className="d-flex align-items-center gap-1 text-secondary" style={{ fontSize: '0.75rem', cursor: 'pointer' }}>
             <input
               type="checkbox"
               checked={wholeWord}
@@ -148,13 +143,12 @@ export default function FindReplaceBar({
         </div>
       </div>
 
-      {/* Buttons */}
       <div className="d-flex align-items-center gap-2 mt-2 mt-sm-0">
         <button
           onClick={handleExecuteReplaceNext}
           disabled={!findStr || matchCount === 0}
           className="btn-textora btn-textora-secondary py-1 px-2"
-          style={{ fontSize: '0.8rem' }}
+          style={{ fontSize: '0.78rem' }}
         >
           Replace
         </button>
@@ -162,19 +156,19 @@ export default function FindReplaceBar({
         <button
           onClick={handleExecuteReplaceAll}
           disabled={!findStr || matchCount === 0}
-          className="btn-textora btn-textora-primary py-1 px-3"
-          style={{ fontSize: '0.8rem' }}
+          className="btn-textora btn-textora-primary py-1 px-2"
+          style={{ fontSize: '0.78rem' }}
         >
-          <FiCheck size={13} />
+          <FiCheck size={12} />
           <span>Replace All</span>
         </button>
 
         <button
           onClick={onClose}
           className="btn-textora btn-textora-ghost p-1 ms-1"
-          title="Close Find & Replace (Esc)"
+          title="Close (Esc)"
         >
-          <FiX size={16} />
+          <FiX size={15} />
         </button>
       </div>
     </div>
